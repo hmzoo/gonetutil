@@ -1,6 +1,7 @@
 package lan
 
 import(
+    "fmt"
   	"net"
     "strconv"
     "errors"
@@ -9,14 +10,27 @@ import(
 )
 
 type Lan struct {
+  Name string
   IPNet *net.IPNet
   Gateway net.IP
+  VlanTag int
 }
 
 func NewLan() *Lan{
   return &Lan{}
 }
 
+func (lan *Lan) String() string {
+  return fmt.Sprintf("%10s %4d %18s %15s %15s",lan.Name,lan.VlanTag,lan.GetIPNet(),lan.GetMask(),lan.GetGateway())
+}
+
+func (lan *Lan) SetName( n string){
+  lan.Name = n
+}
+
+func (lan *Lan) SetVlanTag( t int){
+  lan.VlanTag = t
+}
 
 func (lan *Lan) SetGateway( t string){
   lan.Gateway = net.ParseIP(t)
@@ -143,6 +157,11 @@ func (l Lan) GetLastIP() string {
   return ""
 }
 
+func (l Lan) GetNextNetworkIP() net.IP {
+  r := l.Size()
+  return NextIP(l.IPNet.IP, uint(r))
+}
+
 func (l Lan) Size() int {
 	if l.IPNet == nil {
 		return 0
@@ -155,10 +174,13 @@ func (l Lan) Size() int {
 }
 
 //USEFULL
+func Numeric(ip net.IP) uint {
+  i := ip.To4()
+  return uint(i[0])<<24 + uint(i[1])<<16 + uint(i[2])<<8 + uint(i[3])
+
+}
 func NextIP(ip net.IP, inc uint) net.IP {
-	i := ip.To4()
-	v := uint(i[0])<<24 + uint(i[1])<<16 + uint(i[2])<<8 + uint(i[3])
-	v += inc
+	v := Numeric(ip)+inc
 	v3 := byte(v & 0xFF)
 	v2 := byte((v >> 8) & 0xFF)
 	v1 := byte((v >> 16) & 0xFF)

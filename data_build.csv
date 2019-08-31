@@ -1,2 +1,0 @@
-structure,organization,numid,name,ipnet,ip,cidr,mask,gateway,vlanid
-,,0,OKETO,192.168.10.0/24,192.168.10.0,24,255.255.255.0,,12

@@ -1,3 +1,0 @@
-structure,organization,name,vlanid,ipnet,ip,cidr,mask,gateway
-standard,ORGA,TEST,23,192.168.16.45/24,,,,
-standard,ORGA,TEST2,25,192.168.160.5/25,,,,

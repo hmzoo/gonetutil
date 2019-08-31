@@ -1,0 +1,21 @@
+name: PROD
+gwpos: last
+networks:
+  - name: DMZ
+    cidr: 23
+    vlanbase: 5000
+  - name: DMZ_PUB
+    cidr: 25
+    vlanbase: 4000
+  - name: TOIP
+    cidr: 26
+    vlanbase: 2200
+  - name: IMPRESSION
+    cidr: 26
+    vlanbase: 5300
+  - name: PROD
+    cidr: 25
+    vlanbase: 1500
+  - name: TEST
+    cidr: 25
+    vlanbase: 900
