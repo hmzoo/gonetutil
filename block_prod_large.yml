@@ -3,19 +3,19 @@ gwpos: last
 networks:
   - name: DMZ
     cidr: 22
-    vlanbase: 5000
+    vlanid: 5000
   - name: DMZ_PUB
     cidr: 24
-    vlanbase: 4000
+    vlanid: 4000
   - name: TOIP
     cidr: 25
-    vlanbase: 2200
+    vlanid: 2200
   - name: IMPRESSION
     cidr: 25
-    vlanbase: 5300
+    vlanid: 5300
   - name: PROD
     cidr: 24
-    vlanbase: 1500
+    vlanid: 1500
   - name: TEST
     cidr: 24
-    vlanbase: 900
+    vlanid: 900

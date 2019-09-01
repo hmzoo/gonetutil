@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gocarina/gocsv"
   "gopkg.in/yaml.v2"
+	"github.com/Knetic/govaluate"
   "log"
 	"io/ioutil"
 	"os"
@@ -24,7 +25,8 @@ type BlockDatas []*BlockData
 type NetworkConf struct {
   Name string
   Cidr int
-  Vlanbase int
+  VlanID int
+	VlanID_calculation string
 }
 
 type BlockConf struct {
@@ -61,11 +63,16 @@ func main() {
 
 
   for _,blk := range(blks) {
+
   config := GetConfig(blk.Config)
   bconf := BlockConf{}
   err := yaml.Unmarshal([]byte(config), &bconf)
   if err != nil {
           log.Fatalf("error: %v", err)
+  }
+
+  for i,n := range(bconf.Networks) {
+	   bconf.Networks[i]=NetworkConfCalculation(blk.NumID,n)
   }
 
   BuildNetworks(blk.NumID,blk.Block,bconf )
@@ -105,21 +112,34 @@ func GetConfig(c string) string {
 }
 
 //Sauvegarde du fichier de sortie
-func SaveOutputCSV(csvDatas string) error {
+func SaveOutputCSV(csvDatas string)  {
 	os.Remove(csvDatas)
 	resultFile, err := os.OpenFile(csvDatas, os.O_RDWR|os.O_CREATE, os.ModePerm)
 	if err != nil {
-		return err
+		log.Fatalf("error: %v", err)
 	}
 	defer resultFile.Close()
 
 	err = gocsv.MarshalFile(&output, resultFile)
 	if err != nil {
-		return err
+		log.Fatalf("error: %v", err)
 	}
 
-	return nil
+}
 
+//Evaluation des calculs dans la conf
+func NetworkConfCalculation(numid int ,netconf NetworkConf) NetworkConf {
+	if(netconf.VlanID_calculation!=""){
+	expression, err := govaluate.NewEvaluableExpression(netconf.VlanID_calculation);
+	parameters := make(map[string]interface{}, 8)
+	parameters["numid"] = numid;
+	result, err := expression.Evaluate(parameters);
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	netconf.VlanID=int(result.(float64))
+}
+ return netconf
 }
 
 //Construction des reseaux
@@ -131,7 +151,7 @@ func BuildNetworks(numid int,ipn string, b BlockConf){
   for _,n := range(b.Networks) {
     nlan := lan.NewLan()
     nlan.SetName(n.Name)
-    nlan.SetVlanTag(n.Vlanbase+numid)
+    nlan.SetVlanTag(n.VlanID)
     nlan.SetIPCidr( ip.String(),n.Cidr)
     if(b.Gwpos == "first"){
       nlan.SetGateway(nlan.GetFirstIP())

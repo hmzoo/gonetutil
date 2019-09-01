@@ -3,4 +3,4 @@ gwpos: first
 networks:
   - name: INFRA
     cidr: 24
-    vlanbase: 1100
+    vlanid_calculation: "numid*10+2"
