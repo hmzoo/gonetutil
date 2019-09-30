@@ -37,10 +37,10 @@ type BlockConf struct {
 
 //Structure du fichier de sortie
 type NetData struct {
-
+  Block string `csv:"block"`
   NumID int `csv:"numid"`
   VlanID int `csv:"vlanid"`
-	Name  string `csv:"name"`
+	VlanName  string `csv:"vlanname"`
   IPNet string `csv:"ipnet"`
   Mask string `csv:"mask"`
   Gateway string `csv:"gateway"`
@@ -161,9 +161,10 @@ func BuildNetworks(numid int,ipn string, b BlockConf){
     ip = nlan.GetNextNetworkIP()
     fmt.Println(nlan.String())
     output=append(output,&NetData{
+			Block : b.Name,
       NumID :numid,
       VlanID :nlan.VlanTag,
-      Name : nlan.Name,
+      VlanName : nlan.Name,
       IPNet :nlan.GetIPNet(),
       Mask : nlan.GetMask(),
       Gateway : nlan.GetGateway(),
